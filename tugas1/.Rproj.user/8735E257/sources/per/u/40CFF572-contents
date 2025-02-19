@@ -1,0 +1,29 @@
+# Tambahkan library untuk tema
+library(readr)
+library(ggplot2)
+# Baca data
+dataAlzheimer <- read_csv("alzheimers_disease_data.csv")
+
+# Hitung frekuensi usia
+ageFrequency <- table(dataAlzheimer$Age)
+
+# Konversi ageFrequency ke data frame
+ageFreqDF <- as.data.frame(ageFrequency)
+colnames(ageFreqDF) <- c("Age", "Frequency")
+
+# Pastikan kolom Age adalah numerik
+ageFreqDF$Age <- as.numeric(as.character(ageFreqDF$Age))
+
+# Plot dengan ggplot2
+ggplot(ageFreqDF, aes(x = Age, y = Frequency, fill = Frequency)) +
+  geom_bar(stat = "identity", color = "black", show.legend = FALSE) +  # Hilangkan legenda
+  scale_fill_gradient(low = "skyblue", high = "navyblue") +  # Warna bergradasi
+  geom_text(aes(label = Frequency), vjust = -0.5, size = 3.5, color = "black") +  # Label di atas bar
+  labs(title = "Age Distribution", x = "Age", y = "Frequency") +
+  theme_light() +  # Gunakan tema terang
+  theme(
+    plot.title = element_text(size = 16, face = "bold", hjust = 0.5),  # Judul di tengah
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 10),  # Rotasi label X
+    axis.text.y = element_text(size = 10),  # Ukuran label Y
+    axis.title = element_text(size = 12)  # Ukuran label sumbu
+  )

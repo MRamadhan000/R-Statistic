@@ -1,0 +1,31 @@
+# Menggunakan library
+library(readr)
+library(ggplot2)
+
+# Membaca dataset
+dataStudent <- read_csv("student_lifestyle_dataset.csv")
+
+# Mengubah Stress_Level menjadi angka
+dataStudent$Stress_Level <- as.numeric(factor(dataStudent$Stress_Level, 
+                                              levels = c("Low", "Moderate", "High")))
+
+# Pilih kolom numerik untuk dihitung z-score
+numericalColumns <- dataStudent[, c("Study_Hours_Per_Day", "Extracurricular_Hours_Per_Day", 
+                                    "Sleep_Hours_Per_Day", "Social_Hours_Per_Day")]
+
+# Normalisasi kolom numerik menggunakan z-score
+dataZScore <- as.data.frame(scale(numericalColumns))
+
+# Pilih kolom yang akan divisualisasikan (contoh: "Study_Hours_Per_Day")
+selectedColumn <- "Study_Hours_Per_Day"
+
+# Membuat histogram dengan overlay distribusi normal
+ggplot(dataZScore, aes_string(x = selectedColumn)) +
+  geom_histogram(aes(y = ..density..), binwidth = 0.5, fill = "blue", alpha = 0.5) +
+  stat_function(fun = dnorm, 
+                args = list(mean = mean(dataZScore[[selectedColumn]], na.rm = TRUE), 
+                            sd = sd(dataZScore[[selectedColumn]], na.rm = TRUE)),
+                color = "red", size = 1) +
+  labs(title = paste("Distribusi Normal untuk", selectedColumn),
+       x = selectedColumn, y = "Density") +
+  theme_minimal()
